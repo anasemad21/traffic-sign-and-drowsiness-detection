@@ -1,0 +1,5 @@
+ultralytics
+matplotlib==3.8.3
+opencv-python==4.9.0.80
+pillow==10.2.0
+pytube==15.0.0
