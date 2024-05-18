@@ -1,13 +1,9 @@
 import os
 import shutil
-
 import ffmpeg
 from ultralytics import YOLO
 import time
-import streamlit as st
-import cv2
 from pytube import YouTube
-
 import settings
 import streamlit as st
 from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
