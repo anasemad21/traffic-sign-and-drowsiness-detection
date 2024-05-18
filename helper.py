@@ -1,13 +1,15 @@
 import os
 import shutil
+
 import ffmpeg
 from ultralytics import YOLO
 import time
-from pytube import YouTube
-import settings
 import streamlit as st
-from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
 import cv2
+from pytube import YouTube
+
+import settings
+
 
 def load_model(model_path):
     """
@@ -91,7 +93,7 @@ def play_youtube_video(model):
     """
     source_youtube = st.sidebar.text_input("YouTube Video url")
 
-    
+    print("model",model)
     if st.sidebar.button('Detect Objects'):
         try:
             yt = YouTube(source_youtube)
@@ -153,32 +155,8 @@ def play_rtsp_stream( model):
             st.sidebar.error("Error loading RTSP stream: " + str(e))
 
 
-
-
-# Function to display detected frames
-def _display_detected_frames(model, st_frame, image):
-    # Assuming the model has a detect method that takes an image and returns detections
-    detections = model.detect(image)
-    for detection in detections:
-        x, y, w, h = detection['bbox']
-        label = detection['label']
-        confidence = detection['confidence']
-        cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
-        cv2.putText(image, f'{label} {confidence:.2f}', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
-    st_frame.image(image, channels="BGR")
-
-# Video transformer class for webrtc_streamer
-class VideoTransformer(VideoTransformerBase):
-    def __init__(self, model):
-        self.model = model
-
-    def transform(self, frame):
-        image = frame.to_ndarray(format="bgr24")
-        _display_detected_frames(self.model, st.empty(), image)
-        return frame
-
-def play_webcam(model_path, model):
-    print("Model path from webcam:", model_path)
+def play_webcam( model_path,model):
+    print("model path from web cam ",model_path)
     """
     Plays a webcam stream. Detects Objects in real-time using the YOLOv8 object detection model.
 
@@ -191,12 +169,24 @@ def play_webcam(model_path, model):
     Raises:
         None
     """
+    source_webcam = settings.WEBCAM_PATH
     if st.sidebar.button('Detect Objects'):
-        webrtc_streamer(
-            key="example",
-            video_transformer_factory=lambda: VideoTransformer(model),
-            rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
-        )
+        try:
+            vid_cap = cv2.VideoCapture(source_webcam)
+            st_frame = st.empty()
+            while (vid_cap.isOpened()):
+                success, image = vid_cap.read()
+                if success:
+                    _display_detected_frames(
+                                             model,
+                                             st_frame,
+                                             image,
+                                             )
+                else:
+                    vid_cap.release()
+                    break
+        except Exception as e:
+            st.sidebar.error("Error loading video: " + str(e))
 
 
 def play_stored_video(video, model):
