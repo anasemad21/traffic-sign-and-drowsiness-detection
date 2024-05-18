@@ -41,7 +41,7 @@ elif model_type == 'Drowsiness Detection':
 
 # Load Pre-trained ML Model
 try:
-    print("model path", model_path)
+    
     model = helper.load_model(model_path)
 except Exception as ex:
     st.error(f"Unable to load model. Check the specified path: {model_path}")
