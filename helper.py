@@ -93,7 +93,7 @@ def play_youtube_video(model):
     """
     source_youtube = st.sidebar.text_input("YouTube Video url")
 
-    print("model",model)
+   
     if st.sidebar.button('Detect Objects'):
         try:
             yt = YouTube(source_youtube)
@@ -156,7 +156,7 @@ def play_rtsp_stream( model):
 
 
 def play_webcam( model_path,model):
-    print("model path from web cam ",model_path)
+   
     """
     Plays a webcam stream. Detects Objects in real-time using the YOLOv8 object detection model.
 
